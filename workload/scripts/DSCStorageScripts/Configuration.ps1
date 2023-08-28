@@ -21,6 +21,10 @@ param
     [string] $ShareName,
 
     [Parameter(Mandatory = $true)]
+	[ValidateNotNullOrEmpty()]
+    [String]$SecurityPrincipalNames,
+
+    [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [string] $DomainName,
 
@@ -81,6 +85,10 @@ Configuration DomainJoinFileShare
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $ShareName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]$SecurityPrincipalNames,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -208,4 +216,4 @@ $config = @{
     )
 }
 
-DomainJoinFileShare -ConfigurationData $config -StorageAccountName $StorageAccountName -StorageAccountRG $StorageAccountRG -SubscriptionId $SubscriptionId -ShareName $ShareName -DomainName $DomainName -IdentityServiceProvider $IdentityServiceProvider -AzureCloudEnvironment $AzureCloudEnvironment -CustomOuPath $CustomOuPath -OUName $OUName -CreateNewOU $CreateNewOU -DomainAdminUserName $DomainAdminUserName -DomainAdminUserPassword $DomainAdminUserPassword -ClientId $ClientId -StoragePurpose $StoragePurpose -Verbose;
+DomainJoinFileShare -ConfigurationData $config -StorageAccountName $StorageAccountName -StorageAccountRG $StorageAccountRG -SubscriptionId $SubscriptionId -ShareName $ShareName -DomainName $DomainName -IdentityServiceProvider $IdentityServiceProvider -AzureCloudEnvironment $AzureCloudEnvironment -CustomOuPath $CustomOuPath -OUName $OUName -CreateNewOU $CreateNewOU -DomainAdminUserName $DomainAdminUserName -DomainAdminUserPassword $DomainAdminUserPassword -ClientId $ClientId -SecurityPrincipalNames $SecurityPrincipalNames -StoragePurpose $StoragePurpose -Verbose;

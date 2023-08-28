@@ -16,6 +16,10 @@ param(
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
+    [String]$SecurityPrincipalNames,
+
+	[Parameter(Mandatory = $true)]
+	[ValidateNotNullOrEmpty()]
 	[string] $ClientId,
 
 	[Parameter(Mandatory = $true)]
@@ -168,7 +172,7 @@ Try {
 		Write-Log "Storage key: $StorageKey"
 		Write-Log "File Share location: $FileShareLocation"
 		net use ${DriveLetter}: $FileShareLocation $UserStorage $StorageKey.Value
-		#New-PSDrive -Name $DriveLetter -PSProvider FileSystem -Root $FileShareLocation -Persist
+		#New-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Root $FileShareLocation -Persist #-Credential $Credential
 	}
     else {
         Write-Log "Drive $DriveLetter already mounted."
@@ -180,11 +184,56 @@ Catch {
     Throw $_
 }
 
+try {
+	Write-Log "Getting security principals"
+	# Convert Security Principal Names from a JSON array to a PowerShell array
+	[array]$SecurityPrincipalNames = $SecurityPrincipalNames.Replace("'",'"') | ConvertFrom-Json
+	Write-Log -Message "Security Principal Names:" -Type 'INFO'
+	#$SecurityPrincipalNames | Add-Content -Path 'C:\cse.txt' -Force
+
+	# Determine Principal for assignment
+	#$SecurityPrincipalName = $SecurityPrincipalNames[$i]
+	#$Group = $Netbios + '\' + $SecurityPrincipalName
+	#Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
+}
+catch {
+    Write-Log -Message $_ -Type 'ERROR'
+}
+
+
 Try {
-    Write-Log "setting up NTFS permission for FSLogix"
-    $Commands = "icacls ${DriveLetter}: /remove ('BUILTIN\Administrators')"
-    Invoke-Expression -Command $Commands
-    Write-Log "ACLs set"
+	Write-Log "setting up general NTFS permission"
+
+	$acl = get-acl -path "${DriveLetter}:"
+	$creatorowner = new-object system.security.principal.ntaccount ("creator owner")
+	$acl.purgeaccessrules($creatorowner)
+	$administrator = new-object system.security.principal.ntaccount ("BUILTIN\Administrators")
+	$acl.purgeaccessrules($administrator)
+	$authenticatedusers = new-object system.security.principal.ntaccount ("authenticated users")
+	$acl.purgeaccessrules($authenticatedusers)
+	$users = new-object system.security.principal.ntaccount ("users")
+	$acl.purgeaccessrules($users)
+	$creatorowner = new-object system.security.accesscontrol.filesystemaccessrule("creator owner","modify","containerinherit,objectinherit","inheritonly","allow")
+	$acl.addaccessrule($creatorowner)
+	$acl | set-acl -path "${DriveLetter}:"
+
+	for($i = 0; $i -lt $StorageCount; $i++) {
+		# Determine Principal for assignment
+		$SecurityPrincipalName = $SecurityPrincipalNames[$i]
+		$Group = $Netbios + '\' + $SecurityPrincipalName
+		Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
+
+		Write-Log "setting up provided identities NTFS permission"
+		$aclProvidedGroups = get-acl -path "${DriveLetter}:"
+		$domainusers = new-object system.security.accesscontrol.filesystemaccessrule("$group","modify","none","none","allow")
+		$aclProvidedGroups.setaccessrule($domainusers)
+		$acl | set-acl -path "${DriveLetter}:"
+	}
+
+	# Unmount file share
+	Remove-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Force
+	Start-Sleep -Seconds 5
+	Write-Log -Message "Unmounting the Azure file share, $FileShareLocation, succeeded" -Type 'INFO'
 }
 Catch {
     Write-Log -Err "Error while setting up NTFS permission for FSLogix"

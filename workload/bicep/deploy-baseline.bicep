@@ -55,8 +55,11 @@ param avdIdentityServiceProvider string = 'ADDS'
 @sys.description('Required, Eronll session hosts on Intune. (Default: false)')
 param createIntuneEnrollment bool = false
 
-@sys.description('Optional, Identity ID array to grant RBAC role to access AVD application group. (Default: "")')
+@sys.description('Optional, Identity ID array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
 param avdApplicationGroupIdentitiesIds array = []
+
+@sys.description('Optional, Identity name array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
+param avdApplicationGroupIdentitiesNames array = []
 
 @allowed([
     'Group'
@@ -545,7 +548,7 @@ var varZtKvPrivateEndpointName = 'pe-${varZtKvName}-vault'
 //
 var varFsLogixScriptArguments = (avdIdentityServiceProvider == 'AAD') ? '-volumeshare ${varFslogixSharePath} -storageAccountName ${varFslogixStorageName} -identityDomainName ${avdIdentityDomainName}' : '-volumeshare ${varFslogixSharePath}'
 var varFslogixSharePath = '\\\\${varFslogixStorageName}.file.${environment().suffixes.storage}\\${varFslogixFileShareName}'
-var varBaseScriptUri = 'https://raw.githubusercontent.com/Azure/avdaccelerator/main/workload/'
+var varBaseScriptUri = 'https://raw.githubusercontent.com/Azure/avdaccelerator/ntfs-update/workload/'
 var varFslogixScriptUri = (avdIdentityServiceProvider == 'AAD') ? '${varBaseScriptUri}scripts/Set-FSLogixRegKeysAAD.ps1' : '${varBaseScriptUri}scripts/Set-FSLogixRegKeys.ps1'
 var varFsLogixScript = (avdIdentityServiceProvider == 'AAD') ? './Set-FSLogixRegKeysAad.ps1' : './Set-FSLogixRegKeys.ps1'
 //var varCompRgDeploCleanScript = './cleanUpRgDeployments.ps1'
@@ -763,7 +766,7 @@ var varMarketPlaceGalleryWindows = {
         version: 'latest'
     }
 }
-var varStorageAzureFilesDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/DSCStorageScripts.zip'
+var varStorageAzureFilesDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/ntfs-update/workload/scripts/DSCStorageScripts.zip'
 //var varTempResourcesCleanUpDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/postDeploymentTempResourcesCleanUp.zip'
 var varStorageToDomainScriptUri = '${varBaseScriptUri}scripts/Manual-DSC-Storage-Scripts.ps1'
 //var varPostDeploymentTempResuorcesCleanUpScriptUri = '${varBaseScriptUri}scripts/postDeploymentTempResuorcesCleanUp.ps1'
@@ -1183,6 +1186,7 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
         fileShareName: varFslogixFileShareName
         fileShareMultichannel: (fslogixStoragePerformance == 'Premium') ? true : false
         storageSku: varFslogixStorageSku
+        SecurityPrincipalNames: avdApplicationGroupIdentitiesNames
         fileShareQuotaSize: fslogixFileShareQuotaSize
         storageAccountName: varFslogixStorageName
         storageToDomainScript: varStorageToDomainScript
@@ -1226,6 +1230,7 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         fileShareName: varMsixFileShareName
         fileShareMultichannel: (msixStoragePerformance == 'Premium') ? true : false
         storageSku: varMsixStorageSku
+        SecurityPrincipalNames: avdApplicationGroupIdentitiesNames
         fileShareQuotaSize: msixFileShareQuotaSize
         storageAccountName: varMsixStorageName
         storageToDomainScript: varStorageToDomainScript
