@@ -16,7 +16,7 @@ param(
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
-    [String]$SecurityPrincipalNames,
+	[String] $SecurityPrincipalNames,
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
@@ -35,8 +35,8 @@ param(
 	[string] $CustomOuPath,
 
 	[Parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty()]
-    [string] $IdentityServiceProvider,
+	[ValidateNotNullOrEmpty()]
+	[string] $IdentityServiceProvider,
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
@@ -50,9 +50,9 @@ param(
 	[ValidateNotNullOrEmpty()]
 	[string] $CreateNewOU,
 
-    [Parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty()]
-    [string] $StoragePurpose,
+	[Parameter(Mandatory = $true)]
+	[ValidateNotNullOrEmpty()]
+	[string] $StoragePurpose,
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
@@ -133,7 +133,8 @@ if ($IdentityServiceProvider -eq 'ADDS') {
 	if ( $CustomOuPath -eq 'true') {
 		Join-AzStorageAccountForAuth -ResourceGroupName $StorageAccountRG -StorageAccountName $StorageAccountName -DomainAccountType 'ComputerAccount' -OrganizationalUnitDistinguishedName $OUName -OverwriteExistingADObject
 		Write-Log -Message "Successfully domain joined the storage account $StorageAccountName to custom OU path $OUName"
-	} else {
+	}
+ else {
 		Join-AzStorageAccountForAuth -ResourceGroupName $StorageAccountRG -StorageAccountName $StorageAccountName -DomainAccountType 'ComputerAccount' -OrganizationalUnitName $OUName -OverwriteExistingADObject
 		Write-Log -Message "Successfully domain joined the storage account $StorageAccountName to default OU path $OUName"
 	}
@@ -152,55 +153,56 @@ $account.AzureFilesIdentityBasedAuth
 
 if ($StoragePurpose -eq 'fslogix') {
 	$DriveLetter = 'Y'
-	 }
+}
 if ($StoragePurpose -eq 'msix') {
 	$DriveLetter = 'X'
-	 }
+}
 Write-Log "Mounting $StoragePurpose storage account on Drive $DriveLetter"
 		
-$FileShareLocation = '\\'+ $StorageAccountName + '.file.core.windows.net\'+$ShareName
+$FileShareLocation = '\\' + $StorageAccountName + '.file.core.windows.net\' + $ShareName
 $StorageAccountNameFull = $StorageAccountName + '.file.core.windows.net'
 $connectTestResult = Test-NetConnection -ComputerName $StorageAccountNameFull -Port 445
 Write-Log "Test connection access to port 445 for $StorageAccountNameFull was $connectTestResult"
 Try {
-    Write-Log "Mounting Profile storage $StorageAccountName as a drive $DriveLetter"
-    if (-not (Get-PSDrive -Name $DriveLetter -ErrorAction SilentlyContinue)) {
+	Write-Log "Mounting Profile storage $StorageAccountName as a drive $DriveLetter"
+	if (-not (Get-PSDrive -Name $DriveLetter -ErrorAction SilentlyContinue)) {
 		
-        $UserStorage = "/user:Azure\$StorageAccountName"
+		$UserStorage = "/user:Azure\$StorageAccountName"
 		Write-Log "User storage: $UserStorage"
-        $StorageKey = (Get-AzStorageAccountKey -ResourceGroupName $StorageAccountRG -AccountName $StorageAccountName) | Where-Object {$_.KeyName -eq "key1"}
+		$StorageKey = (Get-AzStorageAccountKey -ResourceGroupName $StorageAccountRG -AccountName $StorageAccountName) | Where-Object { $_.KeyName -eq "key1" }
 		Write-Log "Storage key: $StorageKey"
 		Write-Log "File Share location: $FileShareLocation"
 		net use ${DriveLetter}: $FileShareLocation $UserStorage $StorageKey.Value
 		#New-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Root $FileShareLocation -Persist #-Credential $Credential
 	}
-    else {
-        Write-Log "Drive $DriveLetter already mounted."
-    }
+	else {
+		Write-Log "Drive $DriveLetter already mounted."
+	}
 }
 Catch {
-    Write-Log -Err "Error while mounting profile storage as drive $DriveLetter"
-    Write-Log -Err $_.Exception.Message
-    Throw $_
+	Write-Log -Err "Error while mounting profile storage as drive $DriveLetter"
+	Write-Log -Err $_.Exception.Message
+	Throw $_
 }
 
+<#
 try {
 	Write-Log "Getting security principals"
 	# Convert Security Principal Names from a JSON array to a PowerShell array
 	[array]$SecurityPrincipalNames = $SecurityPrincipalNames.Replace("'",'"') | ConvertFrom-Json
 	Write-Log -Message "Security Principal Names:" -Type 'INFO'
-	#$SecurityPrincipalNames | Add-Content -Path 'C:\cse.txt' -Force
+	$SecurityPrincipalNames | Add-Content -Path 'C:\cse.txt' -Force
 
 	# Determine Principal for assignment
-	#$SecurityPrincipalName = $SecurityPrincipalNames[$i]
-	#$Group = $Netbios + '\' + $SecurityPrincipalName
-	#Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
+	$SecurityPrincipalName = $SecurityPrincipalNames[$i]
+	$Group = $Netbios + '\' + $SecurityPrincipalName
+	Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
 }
 catch {
     Write-Log -Message $_ -Type 'ERROR'
+	Throw $_
 }
-
-
+#>
 Try {
 	Write-Log "setting up general NTFS permission"
 
@@ -213,10 +215,10 @@ Try {
 	$acl.purgeaccessrules($authenticatedusers)
 	$users = new-object system.security.principal.ntaccount ("users")
 	$acl.purgeaccessrules($users)
-	$creatorowner = new-object system.security.accesscontrol.filesystemaccessrule("creator owner","modify","containerinherit,objectinherit","inheritonly","allow")
+	$creatorowner = new-object system.security.accesscontrol.filesystemaccessrule("creator owner", "modify", "containerinherit,objectinherit", "inheritonly", "allow")
 	$acl.addaccessrule($creatorowner)
 	$acl | set-acl -path "${DriveLetter}:"
-
+	<#
 	for($i = 0; $i -lt $StorageCount; $i++) {
 		# Determine Principal for assignment
 		$SecurityPrincipalName = $SecurityPrincipalNames[$i]
@@ -229,14 +231,14 @@ Try {
 		$aclProvidedGroups.setaccessrule($domainusers)
 		$acl | set-acl -path "${DriveLetter}:"
 	}
-
+#>
 	# Unmount file share
 	Remove-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Force
 	Start-Sleep -Seconds 5
 	Write-Log -Message "Unmounting the Azure file share, $FileShareLocation, succeeded" -Type 'INFO'
 }
 Catch {
-    Write-Log -Err "Error while setting up NTFS permission for FSLogix"
-    Write-Log -Err $_.Exception.Message
-    Throw $_
+	Write-Log -Err "Error while setting up NTFS permission for FSLogix"
+	Write-Log -Err $_.Exception.Message
+	Throw $_
 }

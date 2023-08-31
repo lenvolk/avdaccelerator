@@ -22,7 +22,7 @@ param
 
     [Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
-    [String]$SecurityPrincipalNames,
+    [String] $SecurityPrincipalNames,
 
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -88,7 +88,7 @@ Configuration DomainJoinFileShare
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]$SecurityPrincipalNames,
+        [String] $SecurityPrincipalNames,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
