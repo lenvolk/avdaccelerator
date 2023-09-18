@@ -17,8 +17,8 @@ avdVmLocalUserName | Yes      | AVD session host local username.
 avdVmLocalUserPassword | Yes      | AVD session host local password.
 avdIdentityServiceProvider | No       | Required, The service providing domain services for Azure Virtual Desktop. (Default: ADDS)
 createIntuneEnrollment | No       | Required, Eronll session hosts on Intune. (Default: false)
-avdApplicationGroupIdentityId | No       | Optional, Identity ID to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
-avdApplicationGroupIdentityName | No       | Optional, Identity name to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
+securityPrincipalId | No       | Optional, Identity ID to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
+securityPrincipalName | No       | Optional, Identity name to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
 avdApplicationGroupIdentityType | No       | Optional, Identity type to grant RBAC role to access AVD application group. (Default: Group)
 avdIdentityDomainName | Yes      | AD domain name.
 identityDomainGuid | No       | AD domain GUID. (Default: "")
@@ -208,13 +208,13 @@ Required, Eronll session hosts on Intune. (Default: false)
 
 - Default value: `False`
 
-### avdApplicationGroupIdentityId
+### securityPrincipalId
 
 ![Parameter Setting](https://img.shields.io/badge/parameter-optional-green?style=flat-square)
 
 Optional, Identity ID to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
 
-### avdApplicationGroupIdentityName
+### securityPrincipalName
 
 ![Parameter Setting](https://img.shields.io/badge/parameter-optional-green?style=flat-square)
 
@@ -1105,10 +1105,10 @@ Enable usage and telemetry feedback to Microsoft.
         "createIntuneEnrollment": {
             "value": false
         },
-        "avdApplicationGroupIdentityId": {
+        "securityPrincipalId": {
             "value": ""
         },
-        "avdApplicationGroupIdentityName": {
+        "securityPrincipalName": {
             "value": ""
         },
         "avdApplicationGroupIdentityType": {
