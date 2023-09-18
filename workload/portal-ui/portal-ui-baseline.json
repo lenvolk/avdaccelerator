@@ -215,24 +215,24 @@
                                     "name": "identityAvdUserAccessGroupCheckBox",
                                     "type": "Microsoft.Common.CheckBox",
                                     "visible": true,
-                                    "label": "Manually enter group name/ID",
+                                    "label": "Provide group details",
                                     "defaultValue": false,
-                                    "toolTip": "When the desired group are not listed in the drop down, selecting this box will allow for entering the group's ObjectIDs."
+                                    "toolTip": "When the desired group is not listed in the drop down, selecting this box will allow for entering the group's ObjectID and name. this information will be used to setup AVD access and FSLogix's file share NTFS permissions."
                                 },
                                 {
                                     "name": "identityAvdUserAccessGroupTextBox1",
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": "[steps('identity').identityAvdAccess.identityAvdUserAccessGroupCheckBox]",
                                     "label": "Name",
-                                    "toolTip": "Group name to be granted access to Azure Virtual Desktop published items and to create sessions on VMs and single sign-on (SSO) when using AAD as identity provider.",
+                                    "toolTip": "Group name to be granted access to Azure Virtual Desktop published items and FSLogix NTFS permissions.",
                                     "placeholder": "Example: AVD-users"
                                 },
                                 {
                                     "name": "identityAvdUserAccessGroupTextBox2",
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": "[steps('identity').identityAvdAccess.identityAvdUserAccessGroupCheckBox]",
-                                    "label": "ObjectID",
-                                    "toolTip": "ObjectID to be granted access to Azure Virtual Desktop published items and to create sessions on VMs and single sign-on (SSO) when using AAD as identity provider.",
+                                    "label": "Object ID",
+                                    "toolTip": "Group objectID to be granted access to Azure Virtual Desktop published items and FSLogix NTFS permissions.",
                                     "placeholder": "Example: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
                                 }
                             ]
