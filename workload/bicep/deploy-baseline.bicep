@@ -56,10 +56,10 @@ param avdIdentityServiceProvider string = 'ADDS'
 param createIntuneEnrollment bool = false
 
 @sys.description('Optional, Identity ID array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
-param avdApplicationGroupIdentitiesIds array = []
+param avdApplicationGroupIdentityId array = []
 
 @sys.description('Optional, Identity name array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
-param avdApplicationGroupIdentitiesNames array = []
+param avdApplicationGroupIdentityName array = []
 
 @allowed([
     'Group'
@@ -1186,7 +1186,7 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
         fileShareName: varFslogixFileShareName
         fileShareMultichannel: (fslogixStoragePerformance == 'Premium') ? true : false
         storageSku: varFslogixStorageSku
-        SecurityPrincipalNames: avdApplicationGroupIdentitiesNames
+        SecurityPrincipalName: avdApplicationGroupIdentityName
         fileShareQuotaSize: fslogixFileShareQuotaSize
         storageAccountName: varFslogixStorageName
         storageToDomainScript: varStorageToDomainScript
@@ -1230,7 +1230,7 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         fileShareName: varMsixFileShareName
         fileShareMultichannel: (msixStoragePerformance == 'Premium') ? true : false
         storageSku: varMsixStorageSku
-        SecurityPrincipalNames: avdApplicationGroupIdentitiesNames
+        SecurityPrincipalName: avdApplicationGroupIdentityName
         fileShareQuotaSize: msixFileShareQuotaSize
         storageAccountName: varMsixStorageName
         storageToDomainScript: varStorageToDomainScript

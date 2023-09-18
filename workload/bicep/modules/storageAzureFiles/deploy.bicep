@@ -17,7 +17,7 @@ param identityServiceProvider string
 param serviceObjectsRgName string
 
 @sys.description('Optional, Identity name array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
-param SecurityPrincipalNames array = []
+param SecurityPrincipalName array = []
 
 @sys.description('Storage account name.')
 param storageAccountName string
