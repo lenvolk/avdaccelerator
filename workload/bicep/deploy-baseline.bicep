@@ -72,8 +72,8 @@ param avdApplicationGroupIdentityType string = 'Group'
 @sys.description('AD domain name.')
 param avdIdentityDomainName string
 
-@sys.description('Netbios name, will be used to set NTFS file share permissions.')
-param netBios string //testing new param
+@sys.description('Netbios name, will be used to set NTFS file share permissions. (Default: "")')
+param netBios string = ''
 
 @sys.description('AD domain GUID. (Default: "")')
 param identityDomainGuid string = ''
@@ -793,7 +793,6 @@ var varMarketPlaceGalleryWindows = {
 }
 var varStorageAzureFilesDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/ntfs-update/workload/scripts/DSCStorageScripts.zip'
 //var varTempResourcesCleanUpDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/postDeploymentTempResourcesCleanUp.zip'
-var varStorageToDomainScriptUri = '${varBaseScriptUri}scripts/Manual-DSC-Storage-Scripts.ps1'
 var varStorageSetupScriptUri = '${varBaseScriptUri}scripts/Set-NTFSPermissions.ps1'
 //var varPostDeploymentTempResuorcesCleanUpScriptUri = '${varBaseScriptUri}scripts/postDeploymentTempResuorcesCleanUp.ps1'
 var varStorageToDomainScript = './Manual-DSC-Storage-Scripts.ps1'
@@ -1216,11 +1215,8 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
         securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: fslogixFileShareQuotaSize
         storageAccountName: varFslogixStorageName
-        securityPrincipalNames: securityPrincipalNames
         netBios: netBios
         KerberosEncryption: kerberosEncryption
-        //storageToDomainScript: varStorageToDomainScript
-        //storageToDomainScriptUri: varStorageToDomainScriptUri
         identityServiceProvider: avdIdentityServiceProvider
         dscAgentPackageLocation: varStorageAzureFilesDscAgentPackageLocation
         storageCustomOuPath: varStorageCustomOuPath
@@ -1264,7 +1260,6 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: msixFileShareQuotaSize
         storageAccountName: varMsixStorageName
-        securityPrincipalNames: securityPrincipalNames
         netBios: netBios
         KerberosEncryption: kerberosEncryption
         //storageToDomainScript: varStorageToDomainScript
@@ -1278,7 +1273,6 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         createOuForStorageString: varCreateOuForStorageString
         managedIdentityClientId: varCreateStorageDeployment ? identity.outputs.managedIdentityStorageClientId : ''
         domainJoinUserName: avdDomainJoinUserName
-        domainJoinUserPassword: avdDomainJoinUserPassword //change to keyvault
         wrklKvName: varWrklKvName
         serviceObjectsRgName: varServiceObjectsRgName
         identityDomainName: avdIdentityDomainName

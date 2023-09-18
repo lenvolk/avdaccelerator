@@ -196,7 +196,7 @@ module storageSmbShareContributorRoleAssign '../../../../carml/1.3.0/Microsoft.A
 }]
 
 //Management VM Desktop Virtualization Virtual Machine Contributor Role assignment
-module DesktopVirtualizationVirtualMachineContributorRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in appGroupIdentitiesIds: if (createStorageDeployment && (identityServiceProvider == 'AAD') && (!empty(appGroupIdentitiesIds))) {
+module DesktopVirtualizationVirtualMachineContributorRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in securityPrincipalIds: if (createStorageDeployment && (identityServiceProvider == 'AAD') && (!empty(securityPrincipalIds))) {
   name: 'Stora-VMCont-RolAssign-${take('${appGroupIdentitiesId}', 6)}-${time}'
   scope: resourceGroup('${subscriptionId}', '${serviceObjectsRgName}')
   params: {
