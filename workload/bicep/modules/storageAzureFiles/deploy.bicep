@@ -55,6 +55,12 @@ param fileShareQuotaSize int
 @sys.description('Use Azure private DNS zones for private endpoints.')
 param vnetPrivateDnsZoneFilesId string
 
+//@sys.description('Script name for adding storage account to Active Directory.')
+//param storageToDomainScript string
+
+//@sys.description('URI for the script for adding the storage account to Active Directory.')
+//param storageToDomainScriptUri string
+
 @sys.description('Tags to be applied to resources')
 param tags object
 
