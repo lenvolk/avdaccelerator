@@ -17,7 +17,8 @@ avdVmLocalUserName | Yes      | AVD session host local username.
 avdVmLocalUserPassword | Yes      | AVD session host local password.
 avdIdentityServiceProvider | No       | Required, The service providing domain services for Azure Virtual Desktop. (Default: ADDS)
 createIntuneEnrollment | No       | Required, Eronll session hosts on Intune. (Default: false)
-avdApplicationGroupIdentitiesIds | No       | Optional, Identity ID array to grant RBAC role to access AVD application group. (Default: "")
+avdApplicationGroupIdentitiesIds | No       | Optional, Identity ID array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
+avdApplicationGroupIdentitiesNames | No       | Optional, Identity name array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
 avdApplicationGroupIdentityType | No       | Optional, Identity type to grant RBAC role to access AVD application group. (Default: Group)
 avdIdentityDomainName | Yes      | AD domain name.
 identityDomainGuid | No       | AD domain GUID. (Default: "")
@@ -211,7 +212,13 @@ Required, Eronll session hosts on Intune. (Default: false)
 
 ![Parameter Setting](https://img.shields.io/badge/parameter-optional-green?style=flat-square)
 
-Optional, Identity ID array to grant RBAC role to access AVD application group. (Default: "")
+Optional, Identity ID array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
+
+### avdApplicationGroupIdentitiesNames
+
+![Parameter Setting](https://img.shields.io/badge/parameter-optional-green?style=flat-square)
+
+Optional, Identity name array to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")
 
 ### avdApplicationGroupIdentityType
 
@@ -1099,6 +1106,9 @@ Enable usage and telemetry feedback to Microsoft.
             "value": false
         },
         "avdApplicationGroupIdentitiesIds": {
+            "value": []
+        },
+        "avdApplicationGroupIdentitiesNames": {
             "value": []
         },
         "avdApplicationGroupIdentityType": {
