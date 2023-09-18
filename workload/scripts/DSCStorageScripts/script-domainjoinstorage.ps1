@@ -16,7 +16,7 @@ param(
 
 	[Parameter(Mandatory = $false)]
 	[ValidateNotNullOrEmpty()]
-    [String]$SecurityPrincipalNames,
+    [string]$SecurityPrincipalName,
 
 	[Parameter(Mandatory = $true)]
 	[ValidateNotNullOrEmpty()]
@@ -184,23 +184,6 @@ Catch {
     Throw $_
 }
 
-try {
-	Write-Log "Getting security principals"
-	# Convert Security Principal Names from a JSON array to a PowerShell array
-	[array]$SecurityPrincipalNames = $SecurityPrincipalNames.Replace("'",'"') | ConvertFrom-Json
-	Write-Log -Message "Security Principal Names:" -Type 'INFO'
-	#$SecurityPrincipalNames | Add-Content -Path 'C:\cse.txt' -Force
-
-	# Determine Principal for assignment
-	#$SecurityPrincipalName = $SecurityPrincipalNames[$i]
-	#$Group = $Netbios + '\' + $SecurityPrincipalName
-	#Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
-}
-catch {
-    Write-Log -Message $_ -Type 'ERROR'
-}
-
-
 Try {
 	Write-Log "setting up general NTFS permission"
 
@@ -215,21 +198,12 @@ Try {
 	$acl.purgeaccessrules($users)
 	$creatorowner = new-object system.security.accesscontrol.filesystemaccessrule("creator owner","modify","containerinherit,objectinherit","inheritonly","allow")
 	$acl.addaccessrule($creatorowner)
+	# AVD group permissions
+	$Group = 'd2lsolutions.com' + '\' + $SecurityPrincipalName
+	Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
+	$domainGroup = new-object system.security.accesscontrol.filesystemaccessrule("$group","modify","none","none","allow")
+	$aclProvidedGroups.setaccessrule($domainGroup)
 	$acl | set-acl -path "${DriveLetter}:"
-
-	for($i = 0; $i -lt $StorageCount; $i++) {
-		# Determine Principal for assignment
-		$SecurityPrincipalName = $SecurityPrincipalNames[$i]
-		$Group = $Netbios + '\' + $SecurityPrincipalName
-		Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
-
-		Write-Log "setting up provided identities NTFS permission"
-		$aclProvidedGroups = get-acl -path "${DriveLetter}:"
-		$domainusers = new-object system.security.accesscontrol.filesystemaccessrule("$group","modify","none","none","allow")
-		$aclProvidedGroups.setaccessrule($domainusers)
-		$acl | set-acl -path "${DriveLetter}:"
-	}
-
 	# Unmount file share
 	Remove-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Force
 	Start-Sleep -Seconds 5
