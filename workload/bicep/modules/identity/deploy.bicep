@@ -28,7 +28,7 @@ param enableStartVmOnConnect bool
 param identityServiceProvider string
 
 @sys.description('Required, Identity ID to grant RBAC role to access AVD application group.')
-param appGroupIdentitiesIds array
+param securityPrincipalIds array
 
 @sys.description('Deploy scaling plan.')
 param deployScalingPlan bool
@@ -182,7 +182,7 @@ module storageContributorRoleAssign '../../../../carml/1.3.0/Microsoft.Authoriza
 }]
 
 // Storage File Data SMB Share Contributor
-module storageSmbShareContributorRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in appGroupIdentitiesIds: if (createStorageDeployment && (identityServiceProvider == 'AAD') && (!empty(appGroupIdentitiesIds))) {
+module storageSmbShareContributorRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in securityPrincipalIds: if (createStorageDeployment && (identityServiceProvider == 'AAD') && (!empty(securityPrincipalIds))) {
   name: 'Stora-SmbContri-RolAssign-${take('${appGroupIdentitiesId}', 6)}-${time}'
   scope: resourceGroup('${subscriptionId}', '${storageObjectsRgName}')
   params: {
@@ -192,7 +192,7 @@ module storageSmbShareContributorRoleAssign '../../../../carml/1.3.0/Microsoft.A
 }]
 
 // VM AAD access roles compute RG
-module aadIdentityLoginRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in appGroupIdentitiesIds: if (identityServiceProvider == 'AAD' && !empty(appGroupIdentitiesIds)) {
+module aadIdentityLoginRoleAssign '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in securityPrincipalIds: if (identityServiceProvider == 'AAD' && !empty(securityPrincipalIds)) {
   name: 'VM-Login-Comp-${take('${appGroupIdentitiesId}', 6)}-${time}'
   scope: resourceGroup('${subscriptionId}', '${computeObjectsRgName}')
   params: {
@@ -202,7 +202,7 @@ module aadIdentityLoginRoleAssign '../../../../carml/1.3.0/Microsoft.Authorizati
 }]
 
 // VM AAD access roles service objects RG
-module aadIdentityLoginAccessServiceObjects '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in appGroupIdentitiesIds: if (identityServiceProvider == 'AAD' && !empty(appGroupIdentitiesIds)) {
+module aadIdentityLoginAccessServiceObjects '../../../../carml/1.3.0/Microsoft.Authorization/roleAssignments/resourceGroup/deploy.bicep' = [for appGroupIdentitiesId in securityPrincipalIds: if (identityServiceProvider == 'AAD' && !empty(securityPrincipalIds)) {
   name: 'VM-Login-Serv-${take('${appGroupIdentitiesId}', 6)}-${time}'
   scope: resourceGroup('${subscriptionId}', '${serviceObjectsRgName}')
   params: {

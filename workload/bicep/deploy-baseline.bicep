@@ -56,10 +56,10 @@ param avdIdentityServiceProvider string = 'ADDS'
 param createIntuneEnrollment bool = false
 
 @sys.description('Optional, Identity ID to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
-param avdApplicationGroupIdentityId string = ''
+param securityPrincipalId string = ''
 
 @sys.description('Optional, Identity name to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
-param avdApplicationGroupIdentityName string = ''
+param securityPrincipalName string = ''
 
 @allowed([
     'Group'
@@ -987,7 +987,7 @@ module managementPLane './modules/avdManagementPlane/deploy.bicep' = {
         startVmOnConnect: (avdHostPoolType == 'Pooled') ? avdDeployScalingPlan : avdStartVmOnConnect
         workloadSubsId: avdWorkloadSubsId
         identityServiceProvider: avdIdentityServiceProvider
-        applicationGroupIdentitiesIds: array(avdApplicationGroupIdentityId) 
+        securityPrincipalIds: array(securityPrincipalId) 
         applicationGroupIdentityType: avdApplicationGroupIdentityType
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
@@ -1018,7 +1018,7 @@ module identity './modules/identity/deploy.bicep' = {
         enableStartVmOnConnect: avdStartVmOnConnect
         identityServiceProvider: avdIdentityServiceProvider
         createStorageDeployment: varCreateStorageDeployment
-        appGroupIdentitiesIds: array(avdApplicationGroupIdentityId) 
+        securityPrincipalIds: array(securityPrincipalId) 
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
     }
     dependsOn: [
@@ -1186,7 +1186,7 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
         fileShareName: varFslogixFileShareName
         fileShareMultichannel: (fslogixStoragePerformance == 'Premium') ? true : false
         storageSku: varFslogixStorageSku
-        SecurityPrincipalName: avdApplicationGroupIdentityName
+        securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: fslogixFileShareQuotaSize
         storageAccountName: varFslogixStorageName
         storageToDomainScript: varStorageToDomainScript
@@ -1230,7 +1230,7 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         fileShareName: varMsixFileShareName
         fileShareMultichannel: (msixStoragePerformance == 'Premium') ? true : false
         storageSku: varMsixStorageSku
-        SecurityPrincipalName: avdApplicationGroupIdentityName
+        securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: msixFileShareQuotaSize
         storageAccountName: varMsixStorageName
         storageToDomainScript: varStorageToDomainScript

@@ -16,7 +16,7 @@ param computeTimeZone string
 param identityServiceProvider string
 
 @sys.description('Identity ID to grant RBAC role to access AVD application group.')
-param applicationGroupIdentitiesIds array
+param securityPrincipalIds array
 
 @sys.description('Identity type to grant RBAC role to access AVD application group.')
 param applicationGroupIdentityType string
@@ -240,10 +240,10 @@ module applicationGroups '../../../../carml/1.3.0/Microsoft.DesktopVirtualizatio
     hostpoolName: hostPoolName
     tags: tags
     applications: (applicationGroup.applicationGroupType == 'RemoteApp')  ? varRAppApplicationGroupsApps : []
-    roleAssignments: !empty(applicationGroupIdentitiesIds) ? [
+    roleAssignments: !empty(securityPrincipalIds) ? [
       {
       roleDefinitionIdOrName: 'Desktop Virtualization User'
-      principalIds: applicationGroupIdentitiesIds
+      principalIds: securityPrincipalIds
       principalType: applicationGroupIdentityType
       }
     ]: []   
