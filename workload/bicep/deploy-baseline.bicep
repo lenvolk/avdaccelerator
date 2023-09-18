@@ -768,6 +768,7 @@ var varMarketPlaceGalleryWindows = {
 }
 var varStorageAzureFilesDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/ntfs-update/workload/scripts/DSCStorageScripts.zip'
 //var varTempResourcesCleanUpDscAgentPackageLocation = 'https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/postDeploymentTempResourcesCleanUp.zip'
+var varStorageToDomainScriptUri = '${varBaseScriptUri}scripts/Manual-DSC-Storage-Scripts.ps1'
 var varStorageSetupScriptUri = '${varBaseScriptUri}scripts/Set-NTFSPermissions.ps1'
 //var varPostDeploymentTempResuorcesCleanUpScriptUri = '${varBaseScriptUri}scripts/postDeploymentTempResuorcesCleanUp.ps1'
 var varStorageToDomainScript = './Manual-DSC-Storage-Scripts.ps1'
@@ -1189,6 +1190,11 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
         securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: fslogixFileShareQuotaSize
         storageAccountName: varFslogixStorageName
+        securityPrincipalNames: securityPrincipalNames
+        netBios: netBios
+        KerberosEncryption: kerberosEncryption
+        //storageToDomainScript: varStorageToDomainScript
+        //storageToDomainScriptUri: varStorageToDomainScriptUri
         identityServiceProvider: avdIdentityServiceProvider
         dscAgentPackageLocation: varStorageAzureFilesDscAgentPackageLocation
         storageCustomOuPath: varStorageCustomOuPath
