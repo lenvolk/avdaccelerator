@@ -46,6 +46,10 @@ param wrklKvName string
 @sys.description('AVD session host domain join credentials.')
 param domainJoinUserName string
 
+@sys.description('AVD session host domain join credentials.')
+@secure()
+param domainJoinUserPassword string
+
 @sys.description('Azure Files storage account SKU.')
 param storageSku string
 
@@ -82,7 +86,9 @@ param time string = utcNow()
 @sys.description('Sets purpose of the storage account.')
 param storagePurpose string
 
-//parameters for domain join
+@sys.description('ActiveDirectorySolution. ')
+param ActiveDirectorySolution string = 'ActiveDirectoryDomainServices'
+
 @sys.description('Sets location of DSC Agent.')
 param dscAgentPackageLocation string
 
@@ -98,9 +104,29 @@ param createOuForStorageString string
 @sys.description('Managed Identity Client ID')
 param managedIdentityClientId string
 
+@sys.description('Kerberos Encryption. Default is AES256.')
+param KerberosEncryption string 
+
+@sys.description('Location of script. Default is located in workload/scripts')
+param _artifactsLocation string = 'https://github.com/Azure/avdaccelerator/tree/ntfs-setup/workload/scripts/'
+
+@description('SAS Token to access script.')
+param _artifactsLocationSasToken string = ''
+
+param securityPrincipalNames string 
+
+param storageSolution string 
+
+param storageCount int = 1
+
+param storageIndex int = 1
+
+param netBios string = ''
+
 // =========== //
 // Variable declaration //
 // =========== //
+
 var varAzureCloudName = environment().name
 var varStoragePurposeLower = toLower(storagePurpose)
 var varAvdFileShareLogsDiagnostic = [
@@ -109,6 +135,7 @@ var varAvdFileShareLogsDiagnostic = [
 var varAvdFileShareMetricsDiagnostic = [
     'Transaction'
 ]
+
 var varWrklStoragePrivateEndpointName = 'pe-${storageAccountName}-file'
 var vardirectoryServiceOptions = (identityServiceProvider == 'AADDS') ? 'AADDS': (identityServiceProvider == 'AAD') ? 'AADKERB': 'None'
 //var varStorageToDomainScriptArgs = '-DscPath ${dscAgentPackageLocation} -StorageAccountName ${storageAccountName} -StorageAccountRG ${storageObjectsRgName} -StoragePurpose ${storagePurpose} -DomainName ${identityDomainName} -IdentityServiceProvider ${identityServiceProvider} -AzureCloudEnvironment ${varAzureCloudName} -SubscriptionId ${workloadSubsId} -DomainAdminUserName ${domainJoinUserName} -CustomOuPath ${storageCustomOuPath} -OUName ${ouStgPath} -CreateNewOU ${createOuForStorageString} -ShareName ${fileShareName} -ClientId ${managedIdentityClientId}'
@@ -191,6 +218,7 @@ module storageAndFile '../../../../carml/1.3.0/Microsoft.Storage/storageAccounts
 //}
 
 // Custom Extension call in on the DSC script to join Azure storage account to domain. 
+/*
 module addShareToDomainScript './.bicep/azureFilesDomainJoin.bicep' = {
     scope: resourceGroup('${workloadSubsId}', '${serviceObjectsRgName}')
     name: 'Add-${storagePurpose}-Storage-Setup-${time}'
@@ -206,6 +234,62 @@ module addShareToDomainScript './.bicep/azureFilesDomainJoin.bicep' = {
         storageAndFile
     ]
 }
+*/
+/*
+module ntfsPermissions 'ntfsPermissions.bicep' = if (contains(identityServiceProvider, 'ADDS')) {
+    name: 'FslogixNtfsPermissions_${time}'
+    scope: resourceGroup(workloadSubsId, serviceObjectsRgName)
+    params: {
+      _artifactsLocation: _artifactsLocation
+      _artifactsLocationSasToken: _artifactsLocationSasToken
+      CommandToExecute: 'powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId ${managedIdentityClientId} -DomainJoinPassword "${domainJoinUserPassword}" -DomainJoinUserPrincipalName ${domainJoinUserName} -ActiveDirectorySolution "${ActiveDirectorySolution}" -Environment ${environment().name} -KerberosEncryptionType ${KerberosEncryption} -StorageAccountFullName ${storageAccountName} -FileShareName "${fileShareName}" -Netbios ${netBios} -OuPath "${ouStgPath}" -SecurityPrincipalNames "${securityPrincipalNames}" -StorageAccountResourceGroupName ${storageObjectsRgName} -StorageCount ${storageCount} -StorageIndex ${storageIndex} -StorageSolution ${storageSolution} -StorageSuffix ${environment().suffixes.storage} -SubscriptionId ${subscription().subscriptionId} -TenantId ${subscription().tenantId}'
+      Location: sessionHostLocation
+      ManagementVmName: managementVmName
+      Timestamp: time
+    }
+    //...
+  }
+*/
+
+module ntfsPermissions 'ntfsPermissions.bicep' = if (contains(identityServiceProvider, 'ADDS')) {
+    name: 'FslogixNtfsPermissions_${time}'
+    scope: resourceGroup(workloadSubsId, serviceObjectsRgName)
+    params: {
+      _artifactsLocation: _artifactsLocation
+      _artifactsLocationSasToken: _artifactsLocationSasToken
+      CommandToExecute: 'powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId "${managedIdentityClientId}" -DomainJoinPassword "${domainJoinUserPassword}" -DomainJoinUserPrincipalName "${domainJoinUserName}" -ActiveDirectorySolution "${ActiveDirectorySolution}" -Environment "${environment().name}"  -KerberosEncryptionType "${KerberosEncryption}" -StorageAccountFullName "${storageAccountName}" -FileShareName "${fileShareName}" -Netbios "${netBios}" -OuPath "${ouStgPath}" -SecurityPrincipalNames "${securityPrincipalNames}" -StorageAccountResourceGroupName "${storageObjectsRgName}" -StorageCount ${storageCount} -StorageIndex ${storageIndex} -StorageSolution "${storageSolution}" -StorageSuffix "${environment().suffixes.storage}" -SubscriptionId "${subscription().subscriptionId}" -TenantId "${subscription().tenantId}"'
+      Location: sessionHostLocation
+      ManagementVmName: managementVmName
+      Timestamp: time
+    }
+    //...
+  }
+
+/*
+module ntfsPermissions 'ntfsPermissions.bicep' = if (contains(identityServiceProvider, 'ADDS')) {
+  name: 'FslogixNtfsPermissions_${time}'
+  scope: resourceGroup('${workloadSubsId}', '${serviceObjectsRgName}')
+  params: {
+    _artifactsLocation: _artifactsLocation //storageToDomainScriptUri
+    _artifactsLocationSasToken: _artifactsLocationSasToken
+    CommandToExecute: 'powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId ${managedIdentityClientId} -DomainJoinPassword "${domainJoinUserPassword}" -DomainJoinUserPrincipalName ${domainJoinUserName} -ActiveDirectorySolution "${ActiveDirectorySolution}" -Environment ${environment().name} -FslogixSolution ${FslogixSolution} -KerberosEncryptionType ${KerberosEncryption} -StorageAccountName ${storageAccountName} -Netbios ${identityDomainName} -OuPath "${storageCustomOuPath}" -SecurityPrincipalNames "${SecurityPrincipalNames}" -StorageAccountPrefix ${StorageAccountPrefix} -StorageAccountResourceGroupName ${storageObjectsRgName} -StorageCount ${storageCount} -StorageIndex ${storageIndex} -StorageSolution ${storageSolution} -StorageSuffix ${environment().suffixes.storage} -SubscriptionId ${subscription().subscriptionId} -TenantId ${subscription().tenantId}' //change active directory solution to id service provider
+    //DeploymentScriptNamePrefix: DeploymentScriptNamePrefix
+    Location: sessionHostLocation
+    ManagementVmName: managementVmName
+    //TagsDeploymentScripts: TagsDeploymentScripts
+    //TagsVirtualMachines: TagsVirtualMachines
+    Timestamp: time
+    //UserAssignedIdentityResourceId: UserAssignedIdentityResourceId
+  }
+  
+  dependsOn: [
+    privateDnsZoneGroups
+    privateEndpoints
+    shares
+  ]
+  
+}*/
+
 
 // =========== //
 //   Outputs   //

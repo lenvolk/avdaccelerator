@@ -72,6 +72,9 @@ param avdApplicationGroupIdentityType string = 'Group'
 @sys.description('AD domain name.')
 param avdIdentityDomainName string
 
+@sys.description('Netbios name, will be used to set NTFS file share permissions.')
+param netBios string //testing new param
+
 @sys.description('AD domain GUID. (Default: "")')
 param identityDomainGuid string = ''
 
@@ -167,14 +170,36 @@ param vNetworkGatewayOnHub bool = false
 @sys.description('Deploy Fslogix setup. (Default: true)')
 param createAvdFslogixDeployment bool = true
 
+@allowed([
+    'AzureStorageAccount'
+    'AzureNetappFiles'
+])
+@sys.description ('Fslogix Storage Solution. Default is Azure Storage Account.')
+param fslogixStorageSolution string = 'AzureStorageAccount'
+
 @sys.description('Deploy MSIX App Attach setup. (Default: false)')
 param createMsixDeployment bool = false
+
+@allowed([
+    'AzureStorageAccount'
+    'AzureNetappFiles'
+])
+@sys.description ('App attach Storage Solution. Default is Azure Storage Account.')
+param appAttachStorageSolution string = 'AzureStorageAccount'
+
 
 @sys.description('Fslogix file share size. (Default: 1)')
 param fslogixFileShareQuotaSize int = 1
 
 @sys.description('MSIX file share size. (Default: 1)')
 param msixFileShareQuotaSize int = 1
+
+@allowed([
+    'AES256'
+    'RC4'
+])
+@sys.description('Kerberos Encryption. Default is AES256.')
+param kerberosEncryption string = 'AES256'
 
 @sys.description('Deploy new session hosts. (Default: true)')
 param avdDeploySessionHosts bool = true
@@ -1184,6 +1209,7 @@ module fslogixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if 
     name: 'Storage-FSLogix-${time}'
     params: {
         storagePurpose: 'fslogix'
+        storageSolution: fslogixStorageSolution
         fileShareName: varFslogixFileShareName
         fileShareMultichannel: (fslogixStoragePerformance == 'Premium') ? true : false
         storageSku: varFslogixStorageSku
@@ -1231,14 +1257,18 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
     name: 'Storage-MSIX-${time}'
     params: {
         storagePurpose: 'msix'
+        storageSolution: appAttachStorageSolution
         fileShareName: varMsixFileShareName
         fileShareMultichannel: (msixStoragePerformance == 'Premium') ? true : false
         storageSku: varMsixStorageSku
         securityPrincipalName: securityPrincipalName
         fileShareQuotaSize: msixFileShareQuotaSize
         storageAccountName: varMsixStorageName
-        storageToDomainScript: varStorageToDomainScript
-        storageToDomainScriptUri: varStorageToDomainScriptUri
+        securityPrincipalNames: securityPrincipalNames
+        netBios: netBios
+        KerberosEncryption: kerberosEncryption
+        //storageToDomainScript: varStorageToDomainScript
+        //storageToDomainScriptUri: varStorageToDomainScriptUri
         identityServiceProvider: avdIdentityServiceProvider
         dscAgentPackageLocation: varStorageAzureFilesDscAgentPackageLocation
         storageCustomOuPath: varStorageCustomOuPath
@@ -1248,6 +1278,7 @@ module msixAzureFilesStorage './modules/storageAzureFiles/deploy.bicep' = if (cr
         createOuForStorageString: varCreateOuForStorageString
         managedIdentityClientId: varCreateStorageDeployment ? identity.outputs.managedIdentityStorageClientId : ''
         domainJoinUserName: avdDomainJoinUserName
+        domainJoinUserPassword: avdDomainJoinUserPassword //change to keyvault
         wrklKvName: varWrklKvName
         serviceObjectsRgName: varServiceObjectsRgName
         identityDomainName: avdIdentityDomainName
