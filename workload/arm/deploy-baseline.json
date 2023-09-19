@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "10532297135475337412"
+      "templateHash": "16922266111364980391"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -35132,7 +35132,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "17383691146400087728"
+              "templateHash": "14403272771338809181"
             }
           },
           "parameters": {
@@ -35281,13 +35281,6 @@
                 "description": "Sets purpose of the storage account."
               }
             },
-            "ActiveDirectorySolution": {
-              "type": "string",
-              "defaultValue": "ActiveDirectoryDomainServices",
-              "metadata": {
-                "description": "ActiveDirectorySolution. "
-              }
-            },
             "ouStgPath": {
               "type": "string",
               "metadata": {
@@ -35338,6 +35331,7 @@
             }
           },
           "variables": {
+            "varActiveDirectorySolution": "[if(equals(parameters('identityServiceProvider'), 'ADDS'), 'ActiveDirectoryDomainServices', '')]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -39202,7 +39196,7 @@
                     "value": "[parameters('artifactsLocation')]"
                   },
                   "commandToExecute": {
-                    "value": "[format('powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId \"{0}\" -DomainJoinUserPrincipalName \"{1}\" -ActiveDirectorySolution \"{2}\" -Environment \"{3}\"  -KerberosEncryptionType \"{4}\" -StorageAccountFullName \"{5}\" -FileShareName \"{6}\" -Netbios \"{7}\" -OuPath \"{8}\" -SecurityPrincipalName \"{9}\" -StorageAccountResourceGroupName \"{10}\" -StorageCount {11} -StorageIndex {12} -StorageSolution \"{13}\" -StorageSuffix \"{14}\" -SubscriptionId \"{15}\" -TenantId \"{16}\"', parameters('managedIdentityClientId'), parameters('domainJoinUserName'), parameters('ActiveDirectorySolution'), environment().name, parameters('KerberosEncryption'), parameters('storageAccountName'), parameters('fileShareName'), parameters('netBios'), parameters('ouStgPath'), parameters('securityPrincipalName'), parameters('storageObjectsRgName'), parameters('storageCount'), parameters('storageIndex'), parameters('storageSolution'), environment().suffixes.storage, subscription().subscriptionId, subscription().tenantId)]"
+                    "value": "[format('powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId \"{0}\" -DomainJoinUserPrincipalName \"{1}\" -ActiveDirectorySolution \"{2}\" -Environment \"{3}\"  -KerberosEncryptionType \"{4}\" -StorageAccountFullName \"{5}\" -FileShareName \"{6}\" -Netbios \"{7}\" -OuPath \"{8}\" -SecurityPrincipalName \"{9}\" -StorageAccountResourceGroupName \"{10}\" -StorageCount {11} -StorageIndex {12} -StorageSolution \"{13}\" -StorageSuffix \"{14}\" -SubscriptionId \"{15}\" -TenantId \"{16}\"', parameters('managedIdentityClientId'), parameters('domainJoinUserName'), variables('varActiveDirectorySolution'), environment().name, parameters('KerberosEncryption'), parameters('storageAccountName'), parameters('fileShareName'), parameters('netBios'), parameters('ouStgPath'), parameters('securityPrincipalName'), parameters('storageObjectsRgName'), parameters('storageCount'), parameters('storageIndex'), parameters('storageSolution'), environment().suffixes.storage, subscription().subscriptionId, subscription().tenantId)]"
                   },
                   "location": {
                     "value": "[parameters('sessionHostLocation')]"
@@ -39401,7 +39395,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "17383691146400087728"
+              "templateHash": "14403272771338809181"
             }
           },
           "parameters": {
@@ -39550,13 +39544,6 @@
                 "description": "Sets purpose of the storage account."
               }
             },
-            "ActiveDirectorySolution": {
-              "type": "string",
-              "defaultValue": "ActiveDirectoryDomainServices",
-              "metadata": {
-                "description": "ActiveDirectorySolution. "
-              }
-            },
             "ouStgPath": {
               "type": "string",
               "metadata": {
@@ -39607,6 +39594,7 @@
             }
           },
           "variables": {
+            "varActiveDirectorySolution": "[if(equals(parameters('identityServiceProvider'), 'ADDS'), 'ActiveDirectoryDomainServices', '')]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -43471,7 +43459,7 @@
                     "value": "[parameters('artifactsLocation')]"
                   },
                   "commandToExecute": {
-                    "value": "[format('powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId \"{0}\" -DomainJoinUserPrincipalName \"{1}\" -ActiveDirectorySolution \"{2}\" -Environment \"{3}\"  -KerberosEncryptionType \"{4}\" -StorageAccountFullName \"{5}\" -FileShareName \"{6}\" -Netbios \"{7}\" -OuPath \"{8}\" -SecurityPrincipalName \"{9}\" -StorageAccountResourceGroupName \"{10}\" -StorageCount {11} -StorageIndex {12} -StorageSolution \"{13}\" -StorageSuffix \"{14}\" -SubscriptionId \"{15}\" -TenantId \"{16}\"', parameters('managedIdentityClientId'), parameters('domainJoinUserName'), parameters('ActiveDirectorySolution'), environment().name, parameters('KerberosEncryption'), parameters('storageAccountName'), parameters('fileShareName'), parameters('netBios'), parameters('ouStgPath'), parameters('securityPrincipalName'), parameters('storageObjectsRgName'), parameters('storageCount'), parameters('storageIndex'), parameters('storageSolution'), environment().suffixes.storage, subscription().subscriptionId, subscription().tenantId)]"
+                    "value": "[format('powershell -ExecutionPolicy Unrestricted -File Set-NtfsPermissions.ps1 -ClientId \"{0}\" -DomainJoinUserPrincipalName \"{1}\" -ActiveDirectorySolution \"{2}\" -Environment \"{3}\"  -KerberosEncryptionType \"{4}\" -StorageAccountFullName \"{5}\" -FileShareName \"{6}\" -Netbios \"{7}\" -OuPath \"{8}\" -SecurityPrincipalName \"{9}\" -StorageAccountResourceGroupName \"{10}\" -StorageCount {11} -StorageIndex {12} -StorageSolution \"{13}\" -StorageSuffix \"{14}\" -SubscriptionId \"{15}\" -TenantId \"{16}\"', parameters('managedIdentityClientId'), parameters('domainJoinUserName'), variables('varActiveDirectorySolution'), environment().name, parameters('KerberosEncryption'), parameters('storageAccountName'), parameters('fileShareName'), parameters('netBios'), parameters('ouStgPath'), parameters('securityPrincipalName'), parameters('storageObjectsRgName'), parameters('storageCount'), parameters('storageIndex'), parameters('storageSolution'), environment().suffixes.storage, subscription().subscriptionId, subscription().tenantId)]"
                   },
                   "location": {
                     "value": "[parameters('sessionHostLocation')]"
