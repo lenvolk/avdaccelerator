@@ -18,9 +18,6 @@ param identityServiceProvider string
 @sys.description('Identity ID to grant RBAC role to access AVD application group.')
 param securityPrincipalIds array
 
-@sys.description('Identity type to grant RBAC role to access AVD application group.')
-param applicationGroupIdentityType string
-
 @sys.description('AVD OS image source.')
 param osImage string
 
@@ -244,7 +241,7 @@ module applicationGroups '../../../../carml/1.3.0/Microsoft.DesktopVirtualizatio
       {
       roleDefinitionIdOrName: 'Desktop Virtualization User'
       principalIds: securityPrincipalIds
-      principalType: applicationGroupIdentityType
+      principalType: 'Group'
       }
     ]: []   
     diagnosticWorkspaceId: alaWorkspaceResourceId

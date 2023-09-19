@@ -61,14 +61,6 @@ param securityPrincipalId string = ''
 @sys.description('Optional, Identity name to grant RBAC role to access AVD application group and NTFS permissions. (Default: "")')
 param securityPrincipalName string = ''
 
-@allowed([
-    'Group'
-    'ServicePrincipal'
-    'User'
-])
-@sys.description('Optional, Identity type to grant RBAC role to access AVD application group. (Default: Group)')
-param avdApplicationGroupIdentityType string = 'Group'
-
 @sys.description('AD domain name.')
 param avdIdentityDomainName string
 
@@ -1006,7 +998,6 @@ module managementPLane './modules/avdManagementPlane/deploy.bicep' = {
         workloadSubsId: avdWorkloadSubsId
         identityServiceProvider: avdIdentityServiceProvider
         securityPrincipalIds: array(securityPrincipalId)
-        applicationGroupIdentityType: avdApplicationGroupIdentityType
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
         diagnosticLogsRetentionInDays: avdAlaWorkspaceDataRetention

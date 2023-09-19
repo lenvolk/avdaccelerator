@@ -35,14 +35,17 @@
         "createIntuneEnrollment": {
             "value": false
         },            
-        "avdApplicationGroupIdentitiesIds": {
+        "securityPrincipalId": {
             "value": ""
-        },           
-        "avdApplicationGroupIdentityType": {
-            "value": "Group"
-        },       
+        },  
+        "securityPrincipalName": {
+            "value": ""
+        },                    
         "avdIdentityDomainName": {
             "value": "<<IdentityDomainName>>"
+        },
+        "netBios": {
+            "value": ""
         },
         "avdDomainJoinUserName": {
             "value": "none"
@@ -208,6 +211,15 @@
         },
         "deployGpuPolicies": {
             "value": true
+        },
+        "fslogixStorageSolution": {
+            "value": "AzureStorageAccount"
+        },
+        "appAttachStorageSolution": {
+            "value": "AzureStorageAccount"
+        },
+        "kerberosEncryption": {
+            "value": ""
         }
     }
 }
