@@ -26,7 +26,7 @@ param time string = utcNow()
 // Variable declaration //
 // =========== //
 
-var varCommandToExecute = '${commandToExecute} -DomainAdminUserPassword ${domainJoinUserPassword} -verbose'
+var varCommandToExecute = '${commandToExecute} -DomainJoinPassword ${domainJoinUserPassword} -verbose'
 
 // =========== //
 // Deployments //

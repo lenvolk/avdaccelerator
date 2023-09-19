@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "16922266111364980391"
+      "templateHash": "15051264158868187229"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -113,18 +113,6 @@
       "metadata": {
         "description": "Optional, Identity name to grant RBAC role to access AVD application group and NTFS permissions. (Default: \"\")"
       }
-    },
-    "avdApplicationGroupIdentityType": {
-      "type": "string",
-      "defaultValue": "Group",
-      "metadata": {
-        "description": "Optional, Identity type to grant RBAC role to access AVD application group. (Default: Group)"
-      },
-      "allowedValues": [
-        "Group",
-        "ServicePrincipal",
-        "User"
-      ]
     },
     "avdIdentityDomainName": {
       "type": "string",
@@ -13014,9 +13002,6 @@
           "securityPrincipalIds": {
             "value": "[array(parameters('securityPrincipalId'))]"
           },
-          "applicationGroupIdentityType": {
-            "value": "[parameters('avdApplicationGroupIdentityType')]"
-          },
           "tags": "[if(parameters('createResourceTags'), createObject('value', union(variables('varCustomResourceTags'), variables('varAvdDefaultTags'))), createObject('value', variables('varAvdDefaultTags')))]",
           "alaWorkspaceResourceId": "[if(parameters('avdDeployMonitoring'), if(parameters('deployAlaWorkspace'), createObject('value', reference(subscriptionResourceId('Microsoft.Resources/deployments', format('Monitoring-{0}', parameters('time'))), '2022-09-01').outputs.avdAlaWorkspaceResourceId.value), createObject('value', parameters('alaExistingWorkspaceResourceId'))), createObject('value', ''))]",
           "diagnosticLogsRetentionInDays": {
@@ -13033,7 +13018,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "7331727637146687342"
+              "templateHash": "91889314871995986"
             }
           },
           "parameters": {
@@ -13065,12 +13050,6 @@
               "type": "array",
               "metadata": {
                 "description": "Identity ID to grant RBAC role to access AVD application group."
-              }
-            },
-            "applicationGroupIdentityType": {
-              "type": "string",
-              "metadata": {
-                "description": "Identity type to grant RBAC role to access AVD application group."
               }
             },
             "osImage": {
@@ -13935,7 +13914,7 @@
                     "value": "[parameters('tags')]"
                   },
                   "applications": "[if(equals(variables('varApplicaitonGroups')[copyIndex()].applicationGroupType, 'RemoteApp'), createObject('value', variables('varRAppApplicationGroupsApps')), createObject('value', createArray()))]",
-                  "roleAssignments": "[if(not(empty(parameters('securityPrincipalIds'))), createObject('value', createArray(createObject('roleDefinitionIdOrName', 'Desktop Virtualization User', 'principalIds', parameters('securityPrincipalIds'), 'principalType', parameters('applicationGroupIdentityType')))), createObject('value', createArray()))]",
+                  "roleAssignments": "[if(not(empty(parameters('securityPrincipalIds'))), createObject('value', createArray(createObject('roleDefinitionIdOrName', 'Desktop Virtualization User', 'principalIds', parameters('securityPrincipalIds'), 'principalType', 'Group'))), createObject('value', createArray()))]",
                   "diagnosticWorkspaceId": {
                     "value": "[parameters('alaWorkspaceResourceId')]"
                   },
@@ -35132,7 +35111,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "14403272771338809181"
+              "templateHash": "14551661465400904735"
             }
           },
           "parameters": {
@@ -35331,7 +35310,7 @@
             }
           },
           "variables": {
-            "varActiveDirectorySolution": "[if(equals(parameters('identityServiceProvider'), 'ADDS'), 'ActiveDirectoryDomainServices', '')]",
+            "varActiveDirectorySolution": "[if(not(equals(parameters('identityServiceProvider'), 'AAD')), 'ActiveDirectoryDomainServices', '')]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -39183,7 +39162,7 @@
               "condition": "[contains(parameters('identityServiceProvider'), 'ADDS')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('FslogixNtfsPermissions_{0}', parameters('time'))]",
+              "name": "[format('Fslogix-Ntfs-Permissions-{0}', parameters('time'))]",
               "subscriptionId": "[parameters('workloadSubsId')]",
               "resourceGroup": "[parameters('serviceObjectsRgName')]",
               "properties": {
@@ -39223,7 +39202,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "15497845880895726174"
+                      "templateHash": "9350072428006893357"
                     }
                   },
                   "parameters": {
@@ -39260,7 +39239,7 @@
                     }
                   },
                   "variables": {
-                    "varCommandToExecute": "[format('{0} -DomainAdminUserPassword {1} -verbose', parameters('commandToExecute'), parameters('domainJoinUserPassword'))]"
+                    "varCommandToExecute": "[format('{0} -DomainJoinPassword {1} -verbose', parameters('commandToExecute'), parameters('domainJoinUserPassword'))]"
                   },
                   "resources": [
                     {
@@ -39275,7 +39254,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                           "fileUris": [
-                            "[format('{0}Set-NtfsPermissions.ps1', parameters('artifactsLocation'))]"
+                            "[format('{0}/Set-NtfsPermissions.ps1', parameters('artifactsLocation'))]"
                           ],
                           "timestamp": "[parameters('time')]"
                         },
@@ -39395,7 +39374,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "14403272771338809181"
+              "templateHash": "14551661465400904735"
             }
           },
           "parameters": {
@@ -39594,7 +39573,7 @@
             }
           },
           "variables": {
-            "varActiveDirectorySolution": "[if(equals(parameters('identityServiceProvider'), 'ADDS'), 'ActiveDirectoryDomainServices', '')]",
+            "varActiveDirectorySolution": "[if(not(equals(parameters('identityServiceProvider'), 'AAD')), 'ActiveDirectoryDomainServices', '')]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -43446,7 +43425,7 @@
               "condition": "[contains(parameters('identityServiceProvider'), 'ADDS')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('FslogixNtfsPermissions_{0}', parameters('time'))]",
+              "name": "[format('Fslogix-Ntfs-Permissions-{0}', parameters('time'))]",
               "subscriptionId": "[parameters('workloadSubsId')]",
               "resourceGroup": "[parameters('serviceObjectsRgName')]",
               "properties": {
@@ -43486,7 +43465,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "15497845880895726174"
+                      "templateHash": "9350072428006893357"
                     }
                   },
                   "parameters": {
@@ -43523,7 +43502,7 @@
                     }
                   },
                   "variables": {
-                    "varCommandToExecute": "[format('{0} -DomainAdminUserPassword {1} -verbose', parameters('commandToExecute'), parameters('domainJoinUserPassword'))]"
+                    "varCommandToExecute": "[format('{0} -DomainJoinPassword {1} -verbose', parameters('commandToExecute'), parameters('domainJoinUserPassword'))]"
                   },
                   "resources": [
                     {
@@ -43538,7 +43517,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                           "fileUris": [
-                            "[format('{0}Set-NtfsPermissions.ps1', parameters('artifactsLocation'))]"
+                            "[format('{0}/Set-NtfsPermissions.ps1', parameters('artifactsLocation'))]"
                           ],
                           "timestamp": "[parameters('time')]"
                         },
