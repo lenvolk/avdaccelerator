@@ -110,7 +110,7 @@ param netBios string
 // =========== //
 // Variable declaration //
 // =========== //
-var varActiveDirectorySolution = (identityServiceProvider == 'ADDS') ? 'ActiveDirectoryDomainServices': ''
+var varActiveDirectorySolution = (identityServiceProvider != 'AAD') ? 'ActiveDirectoryDomainServices': ''
 var varAvdFileShareLogsDiagnostic = [
     'allLogs'
 ]
@@ -199,7 +199,7 @@ module storageAndFile '../../../../carml/1.3.0/Microsoft.Storage/storageAccounts
 //}
 
 module ntfsPermissions '.bicep/ntfsPermissions.bicep' = if (contains(identityServiceProvider, 'ADDS')) {
-    name: 'FslogixNtfsPermissions_${time}'
+    name: 'Fslogix-Ntfs-Permissions-${time}'
     scope: resourceGroup(workloadSubsId, serviceObjectsRgName)
     params: {
         artifactsLocation: artifactsLocation

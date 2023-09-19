@@ -185,9 +185,6 @@
         "storageOuPath": {
             "value": ""
         },
-        "createOuForStorage": {
-            "value": false
-        },
         "createResourceTags": {
             "value": false
         },
@@ -219,7 +216,7 @@
             "value": "AzureStorageAccount"
         },
         "kerberosEncryption": {
-            "value": ""
+            "value": "AES256"
         }
     }
 }

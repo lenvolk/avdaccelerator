@@ -42,7 +42,7 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: [
-        '${artifactsLocation}Set-NtfsPermissions.ps1'//${_artifactsLocationSasToken}'
+        '${artifactsLocation}/Set-NtfsPermissions.ps1'//${_artifactsLocationSasToken}'
       ]
       timestamp: time
     }
