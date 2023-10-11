@@ -61,8 +61,8 @@ param (
 
 )
 
-Write-Host "Add domain join account as local administrator"
-Add-LocalGroupMember -Group "Administrators" -Member $DomainAdminUserName
+# Write-Host "Add domain join account as local administrator"
+# Add-LocalGroupMember -Group "Administrators" -Member $DomainAdminUserName
 
 Write-Host "Downloading the DSCStorageScripts.zip from $DscPath"
 $DscArhive="DSCStorageScripts.zip"
