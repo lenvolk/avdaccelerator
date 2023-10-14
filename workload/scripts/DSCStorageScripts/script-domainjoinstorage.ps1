@@ -202,7 +202,7 @@ Try {
 	$Group = 'd2lsolutions.com' + '\' + $SecurityPrincipalName
 	Write-Log -Message "Group for NTFS Permissions = $Group" -Type 'INFO'
 	$domainGroup = new-object system.security.accesscontrol.filesystemaccessrule("$group","modify","none","none","allow")
-	$aclProvidedGroups.setaccessrule($domainGroup)
+	$acl.addaccessrule($domainGroup)
 	$acl | set-acl -path "${DriveLetter}:"
 	# Unmount file share
 	Remove-PSDrive -Name $DriveLetter -PSProvider 'FileSystem' -Force
